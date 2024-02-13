@@ -19,6 +19,8 @@ dataloader = torch.utils.data.DataLoader(image_dataset, batch_size=2, shuffle=Tr
 
 dataset_size = len(image_dataset)
 class_names = image_dataset.classes
+print("dataset size: " + str(dataset_size))
+print("class name: " + str(class_names))
 
 model = models.resnet18(pretrained=True)
 # Here the size of each output sample is set to 2.
@@ -45,6 +47,7 @@ from syft.serde.compression import NO_COMPRESSION
 sy.serde.compression.default_compress_scheme = NO_COMPRESSION
 
 data, true_labels = next(iter(dataloader))
+print("data: " + str(data))
 data_ptr = data.send(data_owner)
 
 # We store the true output of the model for comparison purpose
@@ -77,4 +80,3 @@ print("     True labels:", true_labels)
 
 print(encrypted_prediction.decrypt())
 print(true_prediction)
-
