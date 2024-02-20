@@ -1,4 +1,4 @@
-epochs = 3
+epochs = 1
 # We don't use the whole dataset for efficiency purpose, but feel free to increase these numbers
 # n_train_items = 320
 # n_test_items = 320
@@ -107,6 +107,10 @@ private_train_loader, private_test_loader = get_private_data_loaders(
     crypto_provider=crypto_provider
 )
 
+print(private_train_loader)
+
+exit()
+
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -125,7 +129,7 @@ class Net(nn.Module):
         return x
 
 def train(args, model, private_train_loader, optimizer, epoch):
-    
+    model.train()
     for batch_idx, (data, target) in enumerate(private_train_loader): # <-- now it is a private dataset
         start_time = time.time()
         
