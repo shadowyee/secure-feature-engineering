@@ -24,7 +24,7 @@ class Dataloader():
                 ])
                 print("Not normalizing...")
 
-            return self._mnist_loader(transform=transform, isTrain=isTrain)
+            self._mnist_loader(transform=transform, isTrain=isTrain)
         else:
             raise Exception("The dataset not found, MNIST is supported only")
             
@@ -36,4 +36,3 @@ class Dataloader():
         # TODO: support more args change
         self.dataset = datasets.MNIST(root='./data', train=isTrain, download=True, transform=transform)
         self.loader = torch.utils.data.DataLoader(self.dataset, batch_size=len(self.dataset), shuffle=False)
-        return self.loader
