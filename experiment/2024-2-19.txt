@@ -1,4 +1,4 @@
-# Encrypted Neural Network on Encrypted Data expriment
+# Encrypted Neural Network on Encrypted Data
 # time: 2024-2-19
 # code: part12bis.py
 # commit id: e5a4ee8224844bfbf63409b0194e048182370dfc
@@ -9,7 +9,7 @@
 
     Test set: Accuracy: 9451.0/10112 (93%)
 
-# Encrypted Neural Network on Encrypted Data expriment
+# Encrypted Neural Network on Encrypted Data
 # time: 2024-2-19
 # code: part12bis.py
 # commit id: e5a4ee8224844bfbf63409b0194e048182370dfc
