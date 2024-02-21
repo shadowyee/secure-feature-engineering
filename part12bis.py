@@ -67,7 +67,7 @@ def get_private_data_loaders(precision_fractional, workers, crypto_provider):
         """
         return (
             tensor
-            .fix_precision(precision_fractional=precision_fractional)
+            .fix_precision()
             .share(*workers, crypto_provider=crypto_provider, protocol="fss", requires_grad=True)
         )
     
@@ -107,9 +107,9 @@ private_train_loader, private_test_loader = get_private_data_loaders(
     crypto_provider=crypto_provider
 )
 
-print(private_train_loader)
+# print(private_test_loader)
 
-exit()
+# exit()
 
 class Net(nn.Module):
     def __init__(self):
@@ -136,13 +136,14 @@ def train(args, model, private_train_loader, optimizer, epoch):
         optimizer.zero_grad()
 
         output = model(data)
-        
         # loss = F.nll_loss(output, target)  <-- not possible here
         batch_size = output.shape[0]
+
         loss = ((output - target)**2).sum().refresh()/batch_size
-        
+        print(loss.grad)
+        exit()
         loss.backward()
-        
+
         optimizer.step()
 
         if batch_idx % args.log_interval == 0:
