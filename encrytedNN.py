@@ -34,8 +34,8 @@ import participants as pt
 
 owners = ['alice', 'bob']
 crypto_provider = 'crypto_provider'
-parites = pt.Parties()
-parites.init_parties(owners, crypto_provider)
+parties = pt.Parties()
+parties.init_parties(owners, crypto_provider)
 
 def get_private_data_loaders(workers, crypto_provider):
     # import project modules
@@ -69,8 +69,8 @@ def get_private_data_loaders(workers, crypto_provider):
     
     
 private_train_loader, private_test_loader = get_private_data_loaders(
-    workers=parites.data_owners,
-    crypto_provider=parites.crypto_provider
+    workers=parties.data_owners,
+    crypto_provider=parties.crypto_provider
 )
 
 # print(private_test_loader)
@@ -137,7 +137,7 @@ def test(args, model, private_test_loader):
         100. * correct.item() / (len(private_test_loader) * args.test_batch_size)))
 
 model = Net()
-model = model.fix_precision().share(*parites.data_owners, crypto_provider=parites.crypto_provider, protocol="fss", requires_grad=True)
+model = model.fix_precision().share(*parties.data_owners, crypto_provider=parties.crypto_provider, protocol="fss", requires_grad=True)
 
 optimizer = optim.SGD(model.parameters(), lr=args.lr)
 optimizer = optimizer.fix_precision() 
