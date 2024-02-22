@@ -30,22 +30,6 @@ args = Arguments()
 _ = torch.manual_seed(args.seed)
 
 import syft as sy  # import the Pysyft library
-# hook = sy.TorchHook(torch)  # hook PyTorch to add extra functionalities like Federated and Encrypted Learning
-
-# # simulation functions
-# def connect_to_workers(n_workers):
-#     return [
-#         sy.VirtualWorker(hook, id=f"worker{i+1}")
-#         for i in range(n_workers)
-#     ]
-
-# def connect_to_crypto_provider():
-#     return sy.VirtualWorker(hook, id="crypto_provider")
-
-# workers = connect_to_workers(n_workers=2)
-# crypto_provider = connect_to_crypto_provider()
-
-# import project modules
 import participants as pt
 
 owners = ['alice', 'bob']
