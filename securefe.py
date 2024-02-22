@@ -14,11 +14,10 @@ def secret_share(data, workers, crypto_provider):
         .share(*workers, crypto_provider=crypto_provider, protocol="fss", requires_grad=True)
     )
 
-def secure_normalize(secret_data, mean, variance):
+def secure_normalize(secret_data: torch.Tensor, mean, variance):
     """
     Normalize the secret shares of data
     """
-    assert torch.is_tensor(secret_data)
     # input = (input - mean)/variance
     secret_data -= mean
     secret_data /= variance
