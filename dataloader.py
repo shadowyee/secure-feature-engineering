@@ -17,12 +17,12 @@ class Dataloader():
                     transforms.ToTensor(),
                     transforms.Normalize((mean,), (std,))
                 ])
-                print("Normalizing...")
+                print("Load dataset: load {} and normalize...".format(dataset))
             else:
                 transform = transforms.Compose([
                     transforms.ToTensor()
                 ])
-                print("Not normalizing...")
+                print("Load dataset: load {} and not normalize...".format(dataset))
 
             self._mnist_loader(transform=transform, isTrain=isTrain, batch_size=batch_size)
         else:
