@@ -47,15 +47,20 @@ def get_private_data_loaders(workers, crypto_provider):
     
     test_loader = dld.Dataloader()
     test_loader.load_dataset("MNIST", isTrain=False, batch_size=args.test_batch_size)
+    
+    mean = args.normalize_mean
+    std = args.normalize_std
 
     private_train_loader = [
-        (sfe.secure_normalize(sfe.secret_share(data, parites.data_owners, parites.crypto_provider), args.normalize_mean, args.normalize_std), sfe.secret_share(sfe.one_hot_of(target), workers, crypto_provider)) 
+        (sfe.secure_normalize(sfe.secret_share(data, workers, crypto_provider), mean, std), 
+         sfe.secret_share(sfe.one_hot_of(target), workers, crypto_provider)) 
         for i, (data, target) in enumerate(train_loader.loader)
         if i < n_train_items / args.batch_size
     ]
 
     private_test_loader = [
-        (sfe.secure_normalize(sfe.secret_share(data, parites.data_owners, parites.crypto_provider), args.normalize_mean, args.normalize_std), sfe.secret_share(target.float(), workers, crypto_provider))
+        (sfe.secure_normalize(sfe.secret_share(data, workers, crypto_provider), mean, std), 
+         sfe.secret_share(target.float(), workers, crypto_provider))
         for i, (data, target) in enumerate(test_loader.loader)
         if i < n_test_items / args.test_batch_size
     ]
