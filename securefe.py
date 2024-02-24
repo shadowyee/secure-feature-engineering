@@ -39,4 +39,22 @@ def one_hot_of(index_tensor):
     onehot_tensor = onehot_tensor.scatter(1, index_tensor.view(-1, 1), 1)
     return onehot_tensor
 
+
+def secure_fselect(data: torch.Tensor, feature_num):
+    """
+    """
+    pass
+    # Argument data has to be AdditivesharingTensor
+    
+    # Select one feature's values from every sample
+    data_f = data.view(-1, feature_num)     # Flatten the image
+    print(data_f.shape)                     # The first num refers to the batch size of dataset
+    
+
+def secure_mean(data: torch.Tensor):
+    """
+    Calculate the mean
+    """
+    return torch.mean(data)
+
 # TODO: implement other secure feature engineering method
