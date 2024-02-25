@@ -3,11 +3,10 @@ import torch
 from torchvision import datasets, transforms
 import syft as sy 
 
-def secret_share(data, workers, crypto_provider):
+def secret_share(data: torch.Tensor, workers, crypto_provider):
     """
     Transform to fixed precision and secret share a tensor
     """
-    assert torch.is_tensor(data)
     return (
         data
         .fix_precision()       
