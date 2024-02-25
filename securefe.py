@@ -57,7 +57,7 @@ def secure_Gmatrix(data: torch.Tensor, target: torch.Tensor, fnum, classes, work
     B = secret_share(torch.zeros(classes), workers, crypto_provider)
     G = secret_share(torch.zeros(classes), workers, crypto_provider)
 
-    sample_num = data.fla.shape[0]
+    sample_num = data_fla.shape[0]
 
     import time
 
