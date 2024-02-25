@@ -34,10 +34,8 @@ private_train_loader = [
 ]
 
 for idx, (data, target) in enumerate(private_train_loader):
-    # print("{}: {}".format(idx, data))
-    alice, bob = parties.data_owners
-
     feature_num = 784
+    
     # torch.Tensor.reshape(data, (-1, 784))
     data_f = data.view(-1, feature_num)         # Flatten the image of MNIST
     print("Reshaped image size: {}".format(data_f.shape))                         # The first num refers to the batch size of dataset
