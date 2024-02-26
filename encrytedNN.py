@@ -24,6 +24,7 @@ class Arguments():
         self.precision_fractional = 3
         self.normalize_mean = 0.1307
         self.normalize_std = 0.3081
+        self.feature_num = 784
 
 args = Arguments()
 
@@ -43,10 +44,11 @@ def get_private_data_loaders(workers, crypto_provider):
     import dataloader as dld
 
     train_loader = dld.Dataloader()
-    train_loader.load_dataset("MNIST", isTrain=True, batch_size=args.batch_size)
-    
+    train_loader.load_dataset("MNIST_100", isTrain=True, batch_size=args.batch_size)
+    args.feature_num = 100
+
     test_loader = dld.Dataloader()
-    test_loader.load_dataset("MNIST", isTrain=False, batch_size=args.test_batch_size)
+    test_loader.load_dataset("MNIST_100", isTrain=False, batch_size=args.test_batch_size)
     
     mean = args.normalize_mean
     std = args.normalize_std
@@ -80,13 +82,14 @@ private_train_loader, private_test_loader = get_private_data_loaders(
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
+        # TODO: 如果特征数减少了，岂不是输入参数的大小也会减少？
         self.fc1 = nn.Linear(28 * 28, 128)
         self.fc2 = nn.Linear(128, 64)
         self.fc3 = nn.Linear(64, 10)
 
     def forward(self, x):
-        # x = x.view(-1, 784)           view() is not working here, use torch.Tensor.reshape() instead
-        x = torch.Tensor.reshape(x, (-1, 784))
+        # x = x.view(-1, args.feature_num)           view() is not working here, use torch.Tensor.reshape() instead
+        x = torch.Tensor.reshape(x, (-1, args.feature_num))
         x = self.fc1(x)
         x = F.relu(x)
         x = self.fc2(x)
