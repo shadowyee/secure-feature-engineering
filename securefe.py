@@ -62,6 +62,7 @@ def secure_Gmatrix(data: torch.Tensor, target: torch.Tensor, fnum, classes, work
 
     for idx_f in range(0, fnum):
         start_time = time.time()
+        # TODO: fix: a, b, A, B should be initialized here
         for i in range(0, sample_num):
             flag_s = (fmean[idx_f] < data_fla[i, idx_f])
             b += flag_s
@@ -79,7 +80,8 @@ def secure_Gmatrix(data: torch.Tensor, target: torch.Tensor, fnum, classes, work
         
         A[classes - 1] = a - A[classes - 1]
         B[classes - 1] = b - B[classes - 1]
-
+        
+        # TODO: b can not be zero
         G_le = a - (torch.Tensor.dot(A, A)) / a
         G_gt = b - (torch.Tensor.dot(B, B)) / b
 
