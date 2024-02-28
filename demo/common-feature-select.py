@@ -58,6 +58,10 @@ def _cal_Gmatrix():
         print("MS-GINI turn {}: {:.2f}s".format(idx_f, time.time() - start_time))
         print(G[idx_f])
     print(G)
+    import os
+    if not os.path.exists('result'):
+    # Create the directory if it doesn't exist
+        os.makedirs('result')
     torch.save(G, 'result/common_G.pt')
     return G
 
