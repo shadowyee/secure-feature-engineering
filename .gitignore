@@ -3,3 +3,4 @@ data
 /model
 core.*
 __pycache__
+result
