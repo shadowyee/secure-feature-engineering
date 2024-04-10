@@ -12,7 +12,12 @@ bob = sy.VirtualWorker(hook, id="bob")
 # secure addition via pysyft
 x = torch.tensor([25]).share(bob,alice)
 y = torch.tensor([5]).share(bob,alice)
-z1 = x + y
+
+def secure_add(x: torch.Tensor, y: torch.Tensor):
+    return x + y
+
+# z1 = x + y
+z1 = secure_add(x, y)
 print ("secure addition:", z1.get())
 
 # secure multiplication via pysyft
