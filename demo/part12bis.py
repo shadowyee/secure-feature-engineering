@@ -76,6 +76,8 @@ def get_private_data_loaders(precision_fractional, workers, crypto_provider):
         transforms.Normalize((0.1307,), (0.3081,))
     ])
     
+    import time 
+    start_time = time.time()
     train_loader = torch.utils.data.DataLoader(
         datasets.MNIST('./data', train=True, download=True, transform=transformation),
         batch_size=args.batch_size
@@ -97,6 +99,7 @@ def get_private_data_loaders(precision_fractional, workers, crypto_provider):
         for i, (data, target) in enumerate(test_loader)
         if i < n_test_items / args.test_batch_size
     ]
+    print("Normalizing time: {:.2f}s".format(time.time() - start_time))
 
     return private_train_loader, private_test_loader
     
@@ -140,8 +143,7 @@ def train(args, model, private_train_loader, optimizer, epoch):
         batch_size = output.shape[0]
 
         loss = ((output - target)**2).sum().refresh()/batch_size
-        print(loss.grad)
-        exit()
+       
         loss.backward()
 
         optimizer.step()

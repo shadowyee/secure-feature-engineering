@@ -99,7 +99,7 @@ def _select_feature(G, select_num):
     torch.save(dataset, 'result/MNIST_{}/data_fnum{}.pt'.format(select_num, select_num))
 
 if __name__=="__main__":
-    # _cal_Gmatrix()
+    _cal_Gmatrix()
     G = _read_G()
     for i in range(1, 8):
         select_num = i * 100
