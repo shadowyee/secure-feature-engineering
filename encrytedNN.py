@@ -43,12 +43,14 @@ def get_private_data_loaders(workers, crypto_provider):
     import securefe as sfe
     import dataloader as dld
 
+    import time
+    start_time = time.time()
     train_loader = dld.Dataloader()
-    train_loader.load_dataset("MNIST_100", isTrain=True, batch_size=args.batch_size)
-    args.feature_num = 100
+    train_loader.load_dataset("MNIST", isTrain=True, batch_size=args.batch_size)
+    args.feature_num = 784
 
     test_loader = dld.Dataloader()
-    test_loader.load_dataset("MNIST_100", isTrain=False, batch_size=args.test_batch_size)
+    test_loader.load_dataset("MNIST", isTrain=False, batch_size=args.test_batch_size)
     
     mean = args.normalize_mean
     std = args.normalize_std
@@ -66,7 +68,8 @@ def get_private_data_loaders(workers, crypto_provider):
         for i, (data, target) in enumerate(test_loader.loader)
         if i < n_test_items / args.test_batch_size
     ]
-
+    print("Normalizing time: {:.2f}s".format(time.time() - start_time))
+    
     return private_train_loader, private_test_loader
     
     
