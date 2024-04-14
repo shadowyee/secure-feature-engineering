@@ -16,10 +16,13 @@ y = torch.tensor([2])
 x_share = x.share(alice, bob, crypto_provider=crypto_provider, protocol="fss")
 y_share = y.share(alice, bob, crypto_provider=crypto_provider, protocol="fss")
 
+import time 
+start_time = time.time()
 # division based on secret sharing
-result_share = x_share / y_share
+result_share = x_share < y_share
 
 # get division result
 result = result_share.get()
+print("Time consumption: {:.4f}s".format(time.time() - start_time))
 
 print("The result of secret division is:", result)

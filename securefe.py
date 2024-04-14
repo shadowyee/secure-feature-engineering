@@ -3,21 +3,21 @@ import torch
 from torchvision import datasets, transforms
 import syft as sy 
 
-def secret_share(data: torch.Tensor, workers, crypto_provider):
+def secret_share(data: torch.Tensor, workers, crypto_provider, requires_grad=True):
     """
     Transform to fixed precision and secret share a tensor
     """
     return (
         data
         .fix_precision()       
-        .share(*workers, crypto_provider=crypto_provider, protocol="fss", requires_grad=True)
+        .share(*workers, crypto_provider=crypto_provider, protocol="fss", requires_grad=requires_grad)
     )
 
 def secure_normalize(secret_data: torch.Tensor, mean, variance):
     """
     Normalize the secret shares of data
     """
-    # input = (input - mean)/variance
+    # formulation: input = (input - mean)/variance
     secret_data -= mean
     secret_data /= variance
     
