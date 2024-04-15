@@ -4,6 +4,7 @@ Use basic secure function to compute statistics
 
 import torch
 import syft as sy
+import numpy as np
 import securefe as sfe
 import securefunc as sfunc
 
@@ -30,11 +31,16 @@ def secure_mean(workers, crypto_provider, data, prec):
 
         sum = shares.sum()
         mean = sfunc.secure_compute(sum, num, "div", prec)
-        return mean
+        return {mean}
 
     elif dim == 2:
-
-        pass
+        data = np.transpose(data)
+        ret = []
+        for d in data:
+            shares = sfe.secret_share(d, workers, crypto_provider, False)
+            ret.append(sfunc.secure_compute(shares.sum(), shares.shape[0], "div", prec))
+        return ret
+        
     else:
         raise AttributeError("Secure Statistics Computation only support less than 3 dims")
         

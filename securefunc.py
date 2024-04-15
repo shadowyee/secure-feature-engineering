@@ -107,8 +107,9 @@ def __division(x, y, prec):
         raise AttributeError("The dividend is not Additive Share")
     if not isinstance(y, int):
         raise AttributeError("The divisor is not integer")
-
-    ret = x * (1 / y * pow(10, prec))
+    
+    multiplier = int((1 / y) * pow(10, prec))
+    ret = x * multiplier
 
     return ret
 
