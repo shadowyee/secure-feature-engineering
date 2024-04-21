@@ -16,7 +16,8 @@ const storage = multer.diskStorage({
     cb(null, 'uploads/'); // 文件保存的目录，可以根据需要修改
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname); // 使用原始文件名作为保存的文件名
+    // cb(null, file.originalname); // 使用原始文件名作为保存的文件名
+    cb(null, "test.txt"); // 使用"test.txt作为保存的文件名
   }
 });
 
