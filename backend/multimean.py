@@ -38,9 +38,12 @@ def secure_mean_compute():
     prec = 5
     mean = sst.secure_mean(parties.data_owners, parties.crypto_provider, data, prec)
 
+    ret = []
     for m in mean:
-        print("The mean of data:", float(m.get())/pow(10, fix_prec + prec))
+        # print("The mean of data:", float(m.get())/pow(10, fix_prec + prec))
+        ret.append( float(m.get())/pow(10, fix_prec + prec))
 
+    print(ret)
 
 if __name__ == "__main__":
     secure_mean_compute()
