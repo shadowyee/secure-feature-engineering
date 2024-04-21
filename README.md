@@ -37,3 +37,12 @@ if not isinstance(self.other.child, int):
 if torch.is_tensor(self.other) and not isinstance(self.other.child, int):
 ```
 
+# 3. Deployment
+* install the necessary package
+```bash
+npm install express
+npm install multer
+npm install cors
+```
+
+
