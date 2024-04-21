@@ -23,8 +23,9 @@ conda activate <env_name>
 cd 0.2.x-fix-training
 pip install -e .
 ```
-If you encountered some errors when installing dependency, try to comment out dict object '''extras_require''' in ```setup.py```.
+If you encountered some errors when installing dependency, try to comment out dict object ```extras_require``` in ```setup.py```.
 Maybe `pip install protobuf~=3.19.0` is also required.
+And when you fail to install ```pylibsrtp```, try ```apt install libsrtp2-dev```.
 
 * Pysyft 0.2.x bug fix:
 Because 0.2.x version is not supported anymore, you may encounter some bug when using it.

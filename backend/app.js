@@ -4,9 +4,8 @@ const pythonScript = 'multimean.py';
 
 exec(`python ${pythonScript}`, (error, stdout, stderr) => {
     if (error) {
-	console.error(`${error}`);
+        console.error(`${error}`);
         return;
     }
     console.log(`${stdout}`);
 });
-

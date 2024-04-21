@@ -4,3 +4,5 @@ data
 core.*
 __pycache__
 result
+node_modules
+package-lock.json
