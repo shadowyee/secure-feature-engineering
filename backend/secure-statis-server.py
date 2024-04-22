@@ -84,27 +84,28 @@ def allowed_file(filename):
 def upload_file():
     """
     """
-    if 'file' not in request.files:
-        return Response("No file part", status=400)
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return Response("No file part", status=400)
 
-    file = request.files['file']
-    
-    # 如果用户未选择文件，或文件名为空
-    # if file.filename == '':
-    #     pass
-
-    print("test")
-
-    # 如果文件存在且是允许的文件类型
-    if file and allowed_file(file.filename):
-        # 保存文件到指定目录
-        filename = os.path.join(app.config['UPLOAD_FOLDER'], "test.txt")
-        file.save(filename)
+        file = request.files['file']
         
-        divide_into_shares()
-        return Response("File uploaded successfully", status=200)
-    else:
-        return Response("Invalid file type", status=400)
+        # 如果用户未选择文件，或文件名为空
+        # if file.filename == '':
+        #     pass
+
+        print("test")
+
+        # 如果文件存在且是允许的文件类型
+        if file and allowed_file(file.filename):
+            # 保存文件到指定目录
+            filename = os.path.join(app.config['UPLOAD_FOLDER'], "test.txt")
+            file.save(filename)
+            
+            divide_into_shares()
+            return Response("File uploaded successfully", status=200)
+        else:
+            return Response("Invalid file type", status=400)
     
 
 @app.route('/api/shares', methods=['GET'])
