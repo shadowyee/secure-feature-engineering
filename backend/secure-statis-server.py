@@ -9,7 +9,7 @@ import participants as pt
 import syft as sy
 import torch
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 
 app = Flask(__name__)
 
