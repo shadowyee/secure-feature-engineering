@@ -109,7 +109,7 @@ def get_shares():
         objects = []
         for obj_id in worker._objects:
             obj = worker._objects[obj_id]
-            objects.append(obj)
+            objects.append(tuple(obj.tolist()))
             total_size += obj.__sizeof__()
         return objects, total_size
 
@@ -117,7 +117,7 @@ def get_shares():
     global data_owners
     for idx, i in enumerate(data_owners):
         objects, objects_total_size = get_worker_share(i)
-        ret.append([idx, tuple(objects.tolist()), objects_total_size])
+        ret.append([idx, tuple(objects), objects_total_size])
         # print(f"Local Worker {idx}: {objects} objects, {objects_total_size} bytes")
     
     # TODO: 让ret更加标准一点
