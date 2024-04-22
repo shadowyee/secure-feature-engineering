@@ -84,11 +84,16 @@ def allowed_file(filename):
 def upload_file():
     """
     """
+    if 'file' not in request.files:
+        return Response("No file part", status=400)
+
     file = request.files['file']
     
     # 如果用户未选择文件，或文件名为空
-    if file.filename == '':
-        pass
+    # if file.filename == '':
+    #     pass
+
+    print("test")
 
     # 如果文件存在且是允许的文件类型
     if file and allowed_file(file.filename):
