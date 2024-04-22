@@ -68,14 +68,11 @@ def divide_into_shares():
         for d in data:
             shares.append(sfe.secret_share(d, data_owners, crypto_provider, False))
 
-# 设置上传文件保存目录
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# 允许上传的文件类型
 ALLOWED_EXTENSIONS = {'txt'}
 
-# 检查文件扩展名是否允许
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -90,15 +87,9 @@ def upload_file():
 
         file = request.files['file']
         
-        # 如果用户未选择文件，或文件名为空
-        # if file.filename == '':
-        #     pass
-
         print("test")
 
-        # 如果文件存在且是允许的文件类型
         if file and allowed_file(file.filename):
-            # 保存文件到指定目录
             filename = os.path.join(app.config['UPLOAD_FOLDER'], "test.txt")
             file.save(filename)
             
