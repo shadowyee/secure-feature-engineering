@@ -158,7 +158,7 @@ def secure_mean_compute():
             ret.append(float(m.get())/pow(10, fix_prec + prec))
 
     # TODO: 让ret更加标准一点
-    return jsonify({"shares:": ret })
+    return jsonify({"mean:": ret })
     
     
 if __name__ == "__main__":
