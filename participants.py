@@ -22,3 +22,14 @@ class Parties():
         """
         print(self.data_owners)
         print(self.crypto_provider)
+
+    def get_parties(self):
+        """
+
+        """
+        return self.data_owners
+
+    def get_cryptopvd(self):
+        """
+        """
+        return self.crypto_provider
