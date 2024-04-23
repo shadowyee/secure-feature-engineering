@@ -113,6 +113,8 @@ def get_shares():
         objects = []
         for obj_id in worker._objects:
             obj = worker._objects[obj_id]
+            if isinstance(obj, int):    # skip the num_share
+                continue
             objects.append(tuple(obj.tolist()))
             total_size += obj.__sizeof__()
         return objects, total_size
