@@ -50,15 +50,6 @@ def file_to_tensor():
 
     return torch.tensor(matrix, dtype=torch.float32)
 
-def get_worker_share(worker):
-    total_size = 0
-    objects = []
-    for obj_id in worker._objects:
-        obj = worker._objects[obj_id]
-        objects.append(tuple(obj.tolist()))
-        total_size += obj.__sizeof__()
-    return objects, total_size
-
 def divide_into_shares():
     """
 
@@ -113,6 +104,14 @@ def get_shares():
     """
     Get the shares every worker has.
     """
+    def get_worker_share(worker):
+        total_size = 0
+        objects = []
+        for obj_id in worker._objects:
+            obj = worker._objects[obj_id]
+            objects.append(tuple(obj.tolist()))
+            total_size += obj.__sizeof__()
+        return objects, total_size
     ret = []
     global data_owners
     for idx, i in enumerate(data_owners):
@@ -152,22 +151,28 @@ def secure_mean_compute():
     elif dim == 2:
         data = np.transpose(data)
         mean = []
-        mean_shares_dict = {}
-        global owner_names
-        for name in owner_names:
-            mean_shares_dict[name] = []
-
+       
         for share in shares:
             mean.append(sfunc.secure_compute(share.sum(), share.shape[0], "div", prec))
 
-        for m in mean:
-            result = m.get()
-            for name in owner_names:
-                mean_shares_dict[name].append(result[name])
+        def get_mean_share(worker):
+            objects = []
+            for obj_id in worker._objects:
+                obj = worker._objects[obj_id]
+                if obj.shape == torch.Size([]):
+                    objects.append(int(obj))
+            return objects
 
+        mean_shares = []
+        global data_owners
+        for idx, i in enumerate(data_owners):
+            objects = get_mean_share(i)
+            mean_shares.append([idx, tuple(objects)])
+
+        for m in mean:
             ret.append(float(m.get())/pow(10, fix_prec + prec))
 
-    return jsonify({"mean:": ret, "shares:": mean_shares_dict})
+    return jsonify({"mean:": ret, "shares:": mean_shares})
     
     
 if __name__ == "__main__":
