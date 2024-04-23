@@ -14,12 +14,13 @@ from flask import Flask, jsonify, request, Response
 app = Flask(__name__)
 
 data_owners = None
+owner_names = None
 crypto_provider = None
 data = None
 shares = None
 
 def init():
-    global data_owners, crypto_provider,data
+    global data_owners, owner_names, crypto_provider,data
     
     parties_num = 2
     owner_names = []
@@ -48,6 +49,15 @@ def file_to_tensor():
         matrix.append(row)
 
     return torch.tensor(matrix, dtype=torch.float32)
+
+def get_worker_share(worker):
+    total_size = 0
+    objects = []
+    for obj_id in worker._objects:
+        obj = worker._objects[obj_id]
+        objects.append(tuple(obj.tolist()))
+        total_size += obj.__sizeof__()
+    return objects, total_size
 
 def divide_into_shares():
     """
@@ -103,15 +113,6 @@ def get_shares():
     """
     Get the shares every worker has.
     """
-    def get_worker_share(worker):
-        total_size = 0
-        objects = []
-        for obj_id in worker._objects:
-            obj = worker._objects[obj_id]
-            objects.append(tuple(obj.tolist()))
-            total_size += obj.__sizeof__()
-        return objects, total_size
-
     ret = []
     global data_owners
     for idx, i in enumerate(data_owners):
@@ -120,6 +121,8 @@ def get_shares():
         # print(f"Local Worker {idx}: {objects} objects, {objects_total_size} bytes")
     
     return jsonify({"shares:": ret })
+
+
 
 @app.route('/api/mean', methods=['GET'])
 def secure_mean_compute():
@@ -149,16 +152,22 @@ def secure_mean_compute():
     elif dim == 2:
         data = np.transpose(data)
         mean = []
+        mean_shares_dict = {}
+        global owner_names
+        for name in owner_names:
+            mean_shares_dict[name] = []
+
         for share in shares:
             mean.append(sfunc.secure_compute(share.sum(), share.shape[0], "div", prec))
 
-        
         for m in mean:
+            result = m.get()
+            for name in owner_names:
+                mean_shares_dict[name].append(result[name])
+
             ret.append(float(m.get())/pow(10, fix_prec + prec))
 
-       
-
-    return jsonify({"mean:": ret })
+    return jsonify({"mean:": ret, "shares:": mean_shares_dict})
     
     
 if __name__ == "__main__":
