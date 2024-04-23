@@ -146,5 +146,26 @@ def __division_newton(a, b, precision=1e-3, max_iter=1000):
 
     return x_next
 
+def secure_max(shares):
+    """
+    Compute the maximium of a group of numbers
+    """
+    max = shares[0]
+    for share in shares:
+        if __secure_lt(max, share).get():
+            max = share
+
+    return max 
+
+def remove_share(shares, x):
+    """
+    Remove share x from share list
+    """    
+    ret = []
+    for share in shares:
+        if not x is share:
+            ret.append(share)
+    return ret
+
 #TODO: implement more methods althought they are not use in the current project
 
