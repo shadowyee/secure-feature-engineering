@@ -113,7 +113,7 @@ def get_shares():
         objects = []
         for obj_id in worker._objects:
             obj = worker._objects[obj_id]
-            if isinstance(obj, int):    # skip the num_share
+            if obj.shape == torch.Size([]):    # skip the num_share
                 continue
             objects.append(tuple(obj.tolist()))
             total_size += obj.__sizeof__()
@@ -157,13 +157,15 @@ def secure_mean_compute():
         data = np.transpose(data)
         mean = []
         global num_share
-        for share in shares:
-            # mean.append(sfunc.secure_compute(share.sum(), share.shape[0], "div", prec))
-            mean.append(sfunc.secure_compute(share.sum() * pow(10, prec), num_share, "div", prec))
+        # for share in shares:
+        #     mean.append(sfunc.secure_compute(share.sum(), share.shape[0], "div", prec))
             
-        for m in mean:
-            # ret.append(float(m.get())/pow(10, fix_prec + prec))
-            ret.append(m.get() / pow(10, prec))
+        # mean.append(sfunc.secure_compute(share.sum() * pow(10, prec), num_share, "div", prec))
+        mean = sfunc.secure_compute(share.sum() * pow(10, prec), num_share, "div", prec)
+        
+        # for m in mean:
+        #     ret.append(float(m.get())/pow(10, fix_prec + prec))
+        ret.append(mean.get() / pow(10, prec))
 
     return jsonify({"mean:": ret })
     
