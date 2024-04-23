@@ -43,6 +43,24 @@ def correction_test():
     div = sfc.secure_compute(x, y, "div")
     print("secure div:", div.get())
 
+
+def reciprocal_test():
+    crypto_provider = sy.VirtualWorker(hook, id="crypto_provider")   # 利用可信第三方生成乘法三元组
+    x = torch.tensor([25]).share(bob,alice, crypto_provider=crypto_provider)
+    z = sfc.secure_reciprocal(x)
+    print(z.get())
+
+def mean_test():
+    crypto_provider = sy.VirtualWorker(hook, id="crypto_provider")   # 利用可信第三方生成乘法三元组
+    x = torch.tensor([1, 2, 3, 4]).share(bob,alice, crypto_provider=crypto_provider)
+    s = x.sum()
+    y = torch.tensor([4]).share(bob,alice, crypto_provider=crypto_provider)
+    z = s * 1000 / y
+    print(z.get())
+
 if __name__ == "__main__":
-    print("========Correction Test========")
-    correction_test()
+    # print("========Correction Test========")
+    # correction_test()
+
+    reciprocal_test()
+    # mean_test()

@@ -114,9 +114,11 @@ def __division(x, y, prec):
     return ret
 
 
-
-
-
+def secure_reciprocal(x):
+    """
+    TODO: Calculate the reciprocal of x
+    """
+    pass
 
 def __division_newton(a, b, precision=1e-3, max_iter=1000):
     """
