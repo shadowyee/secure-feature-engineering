@@ -22,7 +22,7 @@ num_share = None
 def init():
     global data_owners, crypro_provider,data
     
-    parties_num = 8
+    parties_num = 2
     owner_names = []
     for i in range(0, parties_num):
         owner_names.append("workers" + str(i))
