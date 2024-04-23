@@ -67,7 +67,7 @@ def divide_into_shares():
 
     elif dim == 2:
         global num_share
-        num_share = sfe.secret_share(tensor(data.shape[0]), data_owners, crypto_provider, False)
+        num_share = sfe.secret_share(torch.tensor(data.shape[0]), data_owners, crypto_provider, False)
         data = np.transpose(data)
         for d in data:
             shares.append(sfe.secret_share(d, data_owners, crypto_provider, False))
