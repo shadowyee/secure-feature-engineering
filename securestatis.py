@@ -55,10 +55,26 @@ def secure_std():
     """
     pass
 
-def secure_median():
+def secure_median(shares):
     """
     """
-    pass
+    num = len(shares)
+    if num % 2 != 0:
+        for i in range(num // 2):
+            max = sfunc.secure_max(shares)
+            shares = sfunc.remove_share(shares, max)
+            max.get()
+        return float(sfunc.secure_max(shares).get())
+    else:
+        for i in range(num // 2 - 1):
+            max = sfunc.secure_max(shares)
+            shares = sfunc.remove_share(shares, max)
+            max.get()
+        max = sfunc.secure_max(shares)
+        shares = sfunc.remove_share(shares, max)
+        x = max.get()
+        y = sfunc.secure_max(shares).get()
+        return (float(x) + float(y)) / 2
 
 def secure_mode():
     """
