@@ -17,7 +17,6 @@ data_owners = None
 crypto_provider = None
 data = None
 shares = None
-num_share = None
 
 def init():
     global data_owners, crypto_provider,data
@@ -66,8 +65,6 @@ def divide_into_shares():
         shares.append(sfe.secret_share(data, data_owners, crypto_provider, False))
 
     elif dim == 2:
-        global num_share
-        num_share = sfe.secret_share(torch.tensor(data.shape[0]), data_owners, crypto_provider, False)
         data = np.transpose(data)
         for d in data:
             shares.append(sfe.secret_share(d, data_owners, crypto_provider, False))
@@ -111,8 +108,6 @@ def get_shares():
         objects = []
         for obj_id in worker._objects:
             obj = worker._objects[obj_id]
-            if obj.shape == torch.Size([]):    # skip the num_share
-                continue
             objects.append(tuple(obj.tolist()))
             total_size += obj.__sizeof__()
         return objects, total_size
@@ -154,23 +149,14 @@ def secure_mean_compute():
     elif dim == 2:
         data = np.transpose(data)
         mean = []
-        global num_share
-        # for share in shares:
-        #     mean.append(sfunc.secure_compute(share.sum(), share.shape[0], "div", prec))
-
         for share in shares:
-            # mean.append(sfunc.secure_compute(share.sum() * pow(10, prec), num_share, "div", prec))
-            s = share.sum()
-            p = s * pow(10, prec)
-            r = p / num_share
-            mean.append(r)
-            # mean.append(share.sum() * pow(10, prec) / num_share)
+            mean.append(sfunc.secure_compute(share.sum(), share.shape[0], "div", prec))
 
-        # for m in mean:
-        #     ret.append(float(m.get())/pow(10, fix_prec + prec))
-
+        
         for m in mean:
-            ret.append(m.get() / pow(10, prec))
+            ret.append(float(m.get())/pow(10, fix_prec + prec))
+
+       
 
     return jsonify({"mean:": ret })
     
