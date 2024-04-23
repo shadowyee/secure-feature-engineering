@@ -20,7 +20,7 @@ shares = None
 num_share = None
 
 def init():
-    global data_owners, crypro_provider,data
+    global data_owners, crypto_provider,data
     
     parties_num = 2
     owner_names = []
@@ -28,10 +28,10 @@ def init():
         owner_names.append("workers" + str(i))
 
     parties = pt.Parties()
-    parties.init_parties(owner_names, "crypro_provider")
+    parties.init_parties(owner_names, "crypto_provider")
 
     data_owners = parties.get_parties()
-    crypro_provider = parties.get_cryptopvd()
+    crypto_provider = parties.get_cryptopvd()
 
 init()
 
@@ -54,7 +54,7 @@ def divide_into_shares():
     """
 
     """
-    global data, data_owners, crypro_provider
+    global data, data_owners, crypto_provider
     
     data = file_to_tensor()
     dim = len(data.shape)
@@ -90,8 +90,6 @@ def upload_file():
             return Response("No file part", status=400)
 
         file = request.files['file']
-        
-        print("test")
 
         if file and allowed_file(file.filename):
             filename = os.path.join(app.config['UPLOAD_FOLDER'], "test.txt")
@@ -159,13 +157,20 @@ def secure_mean_compute():
         global num_share
         # for share in shares:
         #     mean.append(sfunc.secure_compute(share.sum(), share.shape[0], "div", prec))
-            
-        # mean.append(sfunc.secure_compute(share.sum() * pow(10, prec), num_share, "div", prec))
-        mean = sfunc.secure_compute(share.sum() * pow(10, prec), num_share, "div", prec)
-        
+
+        for share in shares:
+            # mean.append(sfunc.secure_compute(share.sum() * pow(10, prec), num_share, "div", prec))
+            s = share.sum()
+            p = s * pow(10, prec)
+            r = p / num_share
+            mean.append(r)
+            # mean.append(share.sum() * pow(10, prec) / num_share)
+
         # for m in mean:
         #     ret.append(float(m.get())/pow(10, fix_prec + prec))
-        ret.append(mean.get() / pow(10, prec))
+
+        for m in mean:
+            ret.append(m.get() / pow(10, prec))
 
     return jsonify({"mean:": ret })
     
