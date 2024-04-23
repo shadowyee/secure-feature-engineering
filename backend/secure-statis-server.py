@@ -17,6 +17,7 @@ data_owners = None
 crypto_provider = None
 data = None
 shares = None
+num_share = None
 
 def init():
     global data_owners, crypro_provider,data
@@ -61,9 +62,12 @@ def divide_into_shares():
     global shares
     shares = []
     if dim == 1:
+        # TODO: 未将元素数量进行秘密分享
         shares.append(sfe.secret_share(data, data_owners, crypto_provider, False))
 
     elif dim == 2:
+        global num_share
+        num_share = sfe.secret_share(tensor(data.shape[0]), data_owners, crypto_provider, False)
         data = np.transpose(data)
         for d in data:
             shares.append(sfe.secret_share(d, data_owners, crypto_provider, False))
@@ -120,7 +124,6 @@ def get_shares():
         ret.append([idx, tuple(objects), objects_total_size])
         # print(f"Local Worker {idx}: {objects} objects, {objects_total_size} bytes")
     
-    # TODO: 让ret更加标准一点
     return jsonify({"shares:": ret })
 
 @app.route('/api/mean', methods=['GET'])
@@ -141,6 +144,7 @@ def secure_mean_compute():
 
     global shares
     if dim == 1:
+        # TODO: 未对元素数量的秘密份额进行除法
         num = data.shape[0]
         for share in shares:
             sum = share.sum()
@@ -150,14 +154,15 @@ def secure_mean_compute():
     elif dim == 2:
         data = np.transpose(data)
         mean = []
+        global num_share
         for share in shares:
-            mean.append(sfunc.secure_compute(share.sum(), share.shape[0], "div", prec))
-
+            # mean.append(sfunc.secure_compute(share.sum(), share.shape[0], "div", prec))
+            mean.append(sfunc.secure_compute(share.sum() * pow(10, prec), num_share, "div", prec))
+            
         for m in mean:
-            # print("The mean of data:", float(m.get())/pow(10, fix_prec + prec))
-            ret.append(float(m.get())/pow(10, fix_prec + prec))
+            # ret.append(float(m.get())/pow(10, fix_prec + prec))
+            ret.append(m.get() / pow(10, prec))
 
-    # TODO: 让ret更加标准一点
     return jsonify({"mean:": ret })
     
     
