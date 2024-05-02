@@ -1,7 +1,3 @@
-# Refer to https://github.com/OpenMined/PySyft/blob/ryffel/0.2.x-fix-training/examples/tutorials
-# Part 09 - Intro to Encrypted Programs.ipynb
-# Step 3: SMPC Using PySyft
-
 import torch
 import syft as sy
 import sys
@@ -77,3 +73,14 @@ print("three parties addition:", sum.get())
 
 objects, objects_total_size = get_worker_share(alice)
 print(objects)
+
+print("XOR test:")
+x = torch.tensor([2]).share(bob,alice, crypto_provider=crypto_provider)
+y = torch.tensor([4]).share(bob,alice, crypto_provider=crypto_provider)
+z = x + y - 2 * x * y
+print(z.get())
+
+print("CMP test:")
+x = torch.tensor([2]).share(bob,alice, crypto_provider=crypto_provider)
+z = x == 3
+print(z.get())
