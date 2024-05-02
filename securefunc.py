@@ -77,13 +77,24 @@ def __secure_exp(x, y):
     pass
 
 
-def __secure_sqrt(x):
+def __secure_reciprocal_sqrt(x, alice, bob, crypto_provider):
+    """
+    """
+    x = x/2
+    y = math.exp(-2.2*(x/2 + 0.2)) + 0.198046875
+    y_sh = torch.tensor(y).fix_precision().share(bob,alice,crypto_provider=crypto_provider)
+    x_sh = torch.tensor(x).fix_precision().share(bob,alice,crypto_provider=crypto_provider)
+    for i in range(3):
+        y_sh = y_sh * (1.5 - x_sh * y_sh * y_sh)
+    return y_sh
+
+def __secure_sqrt(x, alice, bob, crypto_provider):
     """
     Square root operation based on secret sharing
-
-    TODO: implement the method through the polynomial expansion
     """
-    pass
+    x_sh = torch.tensor(x).fix_precision().share(bob,alice,crypto_provider=crypto_provider)
+    y_sh = __secure_reciprocal_sqrt(x, alice, bob, crypto_provider)
+    return x_sh * y_sh
 
 def __secure_div(x, y, prec):
     """
