@@ -1,5 +1,7 @@
 import torch
 import numpy as np
+import time
+import csv
 
 def common_dataset():
     X = torch.Tensor([[1, 2], [2, 3], [3, 4]])
@@ -28,8 +30,6 @@ def common_dataset():
     # gradient_descent(X, Y, w_start, b_start, 0.01, 2000, N)
 
 def boston_dataset():
-    import numpy as np
-    import torch
     from sklearn.datasets import load_boston
     from sklearn.preprocessing import StandardScaler
 
@@ -56,21 +56,28 @@ def boston_dataset():
     lr = 0.1
 
     num_iterations = 100
-    for i in range(num_iterations):
-        # print("X", X.shape)
-        # print("theta", theta.shape)
-        h = torch.matmul(X, theta)
-        # print("h", h.shape)
-        # print("y", y.shape)
-        E = h - y
 
-        # print("E", E.shape)
-        print((0.5 / X.shape[0]) * torch.matmul(E.t(), E))
-        
+    time_idx = []
+    cost_idx = []
+
+    start_time = time.time()
+    for i in range(num_iterations):
+        h = torch.matmul(X, theta)
+        E = h - y
+        cost = (0.5 / X.shape[0]) * torch.matmul(E.t(), E)
+        cost_idx.append(float(cost))
+        time_idx.append("{:.6f}".format(time.time() - start_time))
+        print(cost)
         mid = torch.matmul(X.t(), E)
         theta = theta - (lr / X.shape[0]) * mid
     
     print(theta)
+
+    with open('../experiment/linear-multi-common.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['Time', 'Cost'])
+        writer.writerows(zip(time_idx, cost_idx)) 
+
 if __name__ == "__main__":
     # common_dataset()
     boston_dataset()
