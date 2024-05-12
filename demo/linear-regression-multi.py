@@ -10,16 +10,17 @@ bob = sy.VirtualWorker(hook, id="bob")
 crypto_provider = sy.VirtualWorker(hook, id="crypto_provider")
 
 def linear_regression_boston_dataset():
-    from sklearn.datasets import load_boston
+    from sklearn.datasets import load_boston, make_regression
 
-    # 加载波士顿房价数据集
-    boston = load_boston()
+    # boston = load_boston()
+    # X, y = boston.data, boston.target
 
-    # 提取特征和目标值
-    X, y = boston.data, boston.target
+
+    X, y = make_regression(n_samples=10000, n_features=1000, noise=0.1)
     N = X.shape[0]
     M = X.shape[1]
     prec = 3
+    print("DATASET shape:", X.shape)
 
     # 特征标准化
     mean = X.mean(axis=0)
@@ -40,6 +41,7 @@ def linear_regression_boston_dataset():
 
     start_time = time.time()
     for i in range(num_iterations):
+        start_time_iter = time.time() 
         h = X.mm(theta)
         # E = (h - y).view(-1, 1)
         E = torch.Tensor.reshape((h-y), (-1, 1))
@@ -51,6 +53,7 @@ def linear_regression_boston_dataset():
         print(cidx)
         mid = X.transpose(0,1).mm(E).view(-1)
         theta = theta - mid / (N / lr)
+        print("Time per iter:{:.2f}s".format(time.time() - start_time_iter))
 
     print(theta.get())
     with open('../experiment/linear-multi-pysyft.csv', 'w', newline='') as csvfile:

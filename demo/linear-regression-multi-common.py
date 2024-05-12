@@ -30,14 +30,16 @@ def common_dataset():
     # gradient_descent(X, Y, w_start, b_start, 0.01, 2000, N)
 
 def boston_dataset():
-    from sklearn.datasets import load_boston
+    from sklearn.datasets import load_boston, make_regression
     from sklearn.preprocessing import StandardScaler
 
-    # 加载波士顿房价数据集
-    boston = load_boston()
+    # boston = load_boston()
+    # X, y = boston.data, boston.target
+    
+    # Generate 10000 * 1000 dataset
+    X, y = make_regression(n_samples=10000, n_features=1000, noise=0.1)
+    print("DATASET shape:", X.shape)
 
-    # 提取特征和目标值
-    X, y = boston.data, boston.target
 
     # 数据预处理，标准化特征
     # scaler = StandardScaler()
@@ -47,9 +49,9 @@ def boston_dataset():
     std = X.std(axis=0)
     X = (X - mean) / std
 
-    # 将数据转换为PyTorch张量
     X = torch.tensor(X, dtype=torch.float32)
     y = torch.tensor(y, dtype=torch.float32)
+    
 
     theta = torch.zeros(X.shape[1])
     
