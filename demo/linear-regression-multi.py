@@ -50,7 +50,7 @@ def linear_regression_boston_dataset():
         cidx = float(cost.get()) / pow(10, prec)
         cost_idx.append(cidx)
         time_idx.append("{:.6f}".format(time.time() - start_time))
-        print(cidx)
+        print("Cost:", cidx)
         mid = X.transpose(0,1).mm(E).view(-1)
         theta = theta - mid / (N / lr)
         print("Time per iter:{:.2f}s".format(time.time() - start_time_iter))

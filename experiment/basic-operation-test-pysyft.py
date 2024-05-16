@@ -58,7 +58,7 @@ objects, objects_total_size = get_worker_share(alice)
 print("alice:", objects)
 objects, objects_total_size = get_worker_share(bob)
 print("bob:", objects)
-print("ADD result:", result_add.get().child.child)
+print("ADD result:", result_add.get().child.child.item())
 print("---------------------------")
 
 # 乘法
@@ -71,7 +71,7 @@ objects, objects_total_size = get_worker_share(alice)
 print("alice:", objects)
 objects, objects_total_size = get_worker_share(bob)
 print("bob:", objects)
-print("MUL result:", result_mul.get().chlid.child)
+print("MUL result:", result_mul.get().item())
 print("---------------------------")
 
 start_time = time.time()
@@ -83,7 +83,7 @@ objects, objects_total_size = get_worker_share(alice)
 print("alice:", objects)
 objects, objects_total_size = get_worker_share(bob)
 print("bob:", objects)
-print("CMP result:", result_compare.get().child.child)
+print("CMP result:", result_compare.get().child.child.item())
 print("---------------------------")
 
 
@@ -97,7 +97,7 @@ objects, objects_total_size = get_worker_share(alice)
 print("alice:", objects)
 objects, objects_total_size = get_worker_share(bob)
 print("bob:", objects)
-print("s-DIV result:", result_sdiv.get().child.child/pow(10,3))
+print("s-DIV result:", int(result_sdiv.get().child.child/pow(10,3)))
 print("---------------------------")
 
 # 除法
@@ -110,7 +110,7 @@ objects, objects_total_size = get_worker_share(alice)
 print("alice:", objects)
 objects, objects_total_size = get_worker_share(bob)
 print("bob:", objects)
-print("DIV result:", result_div.get().child.child)
+print("DIV result:", result_div.get().child.child.item())
 print("---------------------------")
 
 
@@ -127,7 +127,7 @@ objects, objects_total_size = get_worker_share(server1)
 print("alice:", objects)
 objects, objects_total_size = get_worker_share(server2)
 print("bob:", objects)
-print("SQRT result:", result_sqrt.get().child.child)
+print("SQRT result:", result_sqrt.get().child.child.item())
 print("---------------------------")
 
 exit()
