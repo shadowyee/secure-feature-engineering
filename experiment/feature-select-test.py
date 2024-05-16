@@ -60,7 +60,7 @@ def all_fs():
     A = sfe.secret_share(torch.zeros(mnist_classes), workers, crypto_provider)
     B = sfe.secret_share(torch.zeros(mnist_classes), workers, crypto_provider)
     G_F = sfe.secret_share(torch.zeros(feature_num), workers, crypto_provider)
-    
+    dn = sfe.secret_share(torch.Tensor([data_num]), workers, crypto_provider)
     import time
     
     # data_num = train_loader.dataset.data.shape[0]
@@ -76,22 +76,31 @@ def all_fs():
                 B[j] += flag_m
                 A[j] += private_train_target[i][j] - flag_m
         
-        a = args.batch_size - b
-
+        # a = args.batch_size - b
+        a = dn - b
         for i in range(0, mnist_classes - 1):
             A[mnist_classes - 1] += A[i]
             B[mnist_classes - 1] += B[i]
         
         A[mnist_classes - 1] = a - A[mnist_classes - 1]
         B[mnist_classes - 1] = b - B[mnist_classes - 1]
-
-        G_le = a - (torch.Tensor.dot(A, A)) / a
-        G_gt = b - (torch.Tensor.dot(B, B)) / b
+        
+        for i in range(0, mnist_classes - 1):
+            if i == 0:
+                mid_A = A[i] * A[i]
+                mid_B = B[i] * B[i]
+            else:
+                mid_A += A[i] * A[i]
+                mid_B += B[i] * B[i]
+                
+        G_le = a - mid_A / a
+        G_gt = b - mid_B / b
 
         G_F[idx_f] = G_le + G_gt
         print("MS-GINI turn {}: {:.2f}s".format(idx_f, time.time() - start_time))
     
     G = G_F.get().child.child.child
+    
     print(G)
     # torch.save(G, 'data/G_matrix_all.pt')
 
