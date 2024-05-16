@@ -20,9 +20,9 @@ x = np.arange(len(labels))
 width = 0.25
 
 fig, ax = plt.subplots()
-rects1 = ax.bar(x, norm_values, width, label='Math', color='blue', edgecolor='black')
-rects2 = ax.bar(x + width, crypten_values, width, label='Crypten', color='green', edgecolor='black', hatch='//')
-rects3 = ax.bar(x + 2*width, pysyft_values, width, label='Ours', color='orange', edgecolor='black', hatch='\\')
+rects1 = ax.bar(x, norm_values, width, label='Math', color='gray', edgecolor='black')
+rects2 = ax.bar(x + width, crypten_values, width, label='Crypten', color='gray', edgecolor='black', hatch='//')
+rects3 = ax.bar(x + 2*width, pysyft_values, width, label='Ours', color='gray', edgecolor='black', hatch='\\')
 
 ax.set_ylabel('Time (seconds)')
 ax.set_title('Basic Operation Time')

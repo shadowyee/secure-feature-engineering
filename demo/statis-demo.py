@@ -99,5 +99,5 @@ def secure_median():
         print("======== Median ========")
         print(median.get())
 if __name__ == "__main__":
-    # reciprocal_sqrt_newton(36)
-    secure_median()
+    reciprocal_sqrt_newton(36)
+    # secure_median()
