@@ -21,8 +21,8 @@ parties = pt.Parties()
 parties.init_parties(owner_names, provider_name)
 
 # Load MNIST dataset
-train_loader = dld.Dataloader()
-train_loader.load_dataset("MNIST", isTrain=True, batch_size=args.batch_size,isNormalize=True)      # Normalize the MNIST dataset
+# train_loader = dld.Dataloader()
+# train_loader.load_dataset("MNIST", isTrain=True, batch_size=args.batch_size,isNormalize=True)      # Normalize the MNIST dataset
 
 workers = parties.data_owners
 crypto_provider = parties.crypto_provider
@@ -30,20 +30,28 @@ crypto_provider = parties.crypto_provider
 
 # Secure feature select from the whole dataset
 def all_fs():
-    data = tensor.Tensor([[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6]])
-    private_train_dataset = sfe.secret_share(train_loader.dataset.data[:10], workers, crypto_provider)
-    private_train_target = sfe.secret_share(sfe.one_hot_of(train_loader.dataset.targets[:10]), workers, crypto_provider)
+    data = torch.Tensor([[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [4, 5, 6], [4, 5, 6], [4, 5, 6]])
+    target = torch.LongTensor([0, 3, 9, 4, 5, 7, 8])
+    print("Data:", data)
+    print("Label:", target)
+    data_num = data.shape[0]
+    # private_train_dataset = sfe.secret_share(train_loader.dataset.data[:10], workers, crypto_provider)
+    # private_train_target = sfe.secret_share(sfe.one_hot_of(train_loader.dataset.targets[:10]), workers, crypto_provider)
+    private_train_dataset = sfe.secret_share(data, workers, crypto_provider)
+    private_train_target = sfe.secret_share(sfe.one_hot_of(target), workers, crypto_provider)
     alice, bob = parties.data_owners
 
-    feature_num = 784
+    feature_num = 3
     # torch.Tensor.reshape(data, (-1, 784))
+    
     data_f = private_train_dataset.view(-1, feature_num)         # Flatten the image of MNIST
-    print("Reshaped image size: {}".format(data_f.shape))                         # The first num refers to the batch size of dataset
+    # print("Reshaped image size: {}".format(data_f.shape))                         # The first num refers to the batch size of dataset
+    
     # data_f is a copy of data, the origin data shares would not be changed
     # So, here we have two different data shares: reshaped one and not reshaped one
     
     # Calculate the mean of every feature
-    mean = torch.mean(data_f, dim=0)    
+    mean = torch.mean(private_train_dataset, dim=0)    
     # print(mean.get())
 
     mnist_classes = 10
@@ -55,7 +63,8 @@ def all_fs():
     
     import time
     
-    data_num = train_loader.dataset.data.shape[0]
+    # data_num = train_loader.dataset.data.shape[0]
+  
     for idx_f in range(0, feature_num):
         start_time = time.time()
         for i in range(0, data_num):
@@ -87,4 +96,5 @@ def all_fs():
     # torch.save(G, 'data/G_matrix_all.pt')
 
 if __name__=="__main__":
+    print("Feature Score:")
     all_fs()
