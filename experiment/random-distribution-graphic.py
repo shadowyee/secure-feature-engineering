@@ -30,12 +30,30 @@ for i in range(loop_num):
 # 将数据转换为 NumPy 数组
 data = np.array(data)
 
-# 使用 Matplotlib 绘制直方图
+# # 使用 Matplotlib 绘制直方图
+# plt.figure(figsize=(10, 6))
+# plt.hist(data, bins=100, edgecolor='black', alpha=0.7)
+# plt.title('Distribution of Secret Shares')
+# plt.xlabel('Value')
+# plt.ylabel('Frequency')
+# plt.savefig('distribution-of-secret-shares.png')
+# plt.show()
+
+# 计算直方图
+counts, bin_edges = np.histogram(data, bins=100)
+
+# 计算 bin 的中心点
+bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+
+# 绘制折线图
 plt.figure(figsize=(10, 6))
-plt.hist(data, bins=100, edgecolor='black', alpha=0.7)
+plt.plot(bin_centers, counts, linestyle='-', marker='o')  # 使用线和点来绘制折线图
 plt.title('Distribution of Secret Shares')
 plt.xlabel('Value')
 plt.ylabel('Frequency')
+
+plt.ylim(0, max(counts) + 1000)  # 设置纵坐标范围，增加上限
+
 plt.savefig('distribution-of-secret-shares.png')
 plt.show()
 
