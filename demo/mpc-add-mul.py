@@ -1,7 +1,3 @@
-# Refer to https://github.com/OpenMined/PySyft/blob/ryffel/0.2.x-fix-training/examples/tutorials
-# Part 09 - Intro to Encrypted Programs.ipynb
-# Step 3: SMPC Using PySyft
-
 import torch
 import syft as sy
 import sys
@@ -51,9 +47,40 @@ ans3 = z3.get()
 dim = len(ans3.shape)
 print ("secure matrix multiplication:", ans3)
 
+def get_worker_share(worker):
+    total_size = 0
+    objects = []
+    for obj_id in worker._objects:
+        obj = worker._objects[obj_id]
+        objects.append(tuple(obj.tolist()))
+        total_size += obj.__sizeof__()
+    return objects, total_size
+
 # three parties addition
 x = torch.tensor([1]).share(alice, bob, copper, crypto_provider=crypto_provider)
 y = torch.tensor([2]).share(alice, bob, copper, crypto_provider=crypto_provider)
 z = torch.tensor([3]).share(alice, bob, copper, crypto_provider=crypto_provider)
+
+objects, objects_total_size = get_worker_share(alice)
+print(objects)
+
 sum = x + y + z
+
+objects, objects_total_size = get_worker_share(alice)
+print(objects)
+
 print("three parties addition:", sum.get())
+
+objects, objects_total_size = get_worker_share(alice)
+print(objects)
+
+print("XOR test:")
+x = torch.tensor([2]).share(bob,alice, crypto_provider=crypto_provider)
+y = torch.tensor([4]).share(bob,alice, crypto_provider=crypto_provider)
+z = x + y - 2 * x * y
+print(z.get())
+
+print("CMP test:")
+x = torch.tensor([2]).share(bob,alice, crypto_provider=crypto_provider)
+z = x == 3
+print(z.get())

@@ -8,58 +8,103 @@ import numpy as np
 import securefe as sfe
 import securefunc as sfunc
 
-def secure_mean(workers, crypto_provider, data, prec):
+def secure_mean(shares, dim, num):
     """
     """
-    if not isinstance(data, torch.Tensor):
-        raise AttributeError("Attr data has to be Tensor")
-    dim = len(data.shape)
+
+    ret = []
 
     if dim == 1:
-        # TODO: fixed precision
-        num = data.shape[0]
-        shares = sfe.secret_share(data, workers, crypto_provider, False)
-        
-        # use torch.mean() will cause unexpected error
-        # mean = torch.mean(shares, dim=0)
-        # divide num will cause unexpected error
-        # mean = shares.sum() / num
-        # if the num of parties is more than 2 will cause the above problems
-        
-        # TODO: the division method in securenn is not worked
-        # mean = securenn.division(shares, num)
-
-        sum = shares.sum()
-        mean = sfunc.secure_compute(sum, num, "div", prec)
+        for share in shares:
+            sum = share.sum()
+            mean = sum / num
         return {mean}
 
     elif dim == 2:
-        data = np.transpose(data)
-        ret = []
-        for d in data:
-            shares = sfe.secret_share(d, workers, crypto_provider, False)
-            ret.append(sfunc.secure_compute(shares.sum(), shares.shape[0], "div", prec))
-        return ret
-        
+        mean = []
+        for share in shares:
+            s = share.sum()
+            p = s
+            r = p / num
+            mean.append(r)
+
+        return mean
+
     else:
         raise AttributeError("Secure Statistics Computation only support less than 3 dims")
         
 
-def secure_varience():
+def secure_varience(shares, mean, N):
     """
     """
-    pass
+    for m in mean:
+        for i in range(N):
+            mid = shares[i] - m
+            if i == 0:
+                ret = mid * mid
+            else:
+                ret += mid * mid
+        return ret / N
 
 def secure_std():
     """
     """
+
     pass
 
-def secure_median():
+def secure_median(numList, hook, alice, bob, crypto_provider):
     """
     """
-    pass
+    shares = numList.fix_precision().share(alice, bob, crypto_provider=crypto_provider)
+    print("Bits Vector Generation:")
+    sort_vector = []
+    N = len(numList)
 
+    for i in range(N):
+        sum = shares[i] > shares[i]
+        for j in range(N):
+            if j == i:
+                continue
+            sum += shares[i] > shares[j]
+        sort_vector.append(sum)
+
+    bit_vector = []
+    mid = torch.Tensor([N // 2]).fix_precision().share(alice, bob, crypto_provider=crypto_provider)    
+    if N % 2 == 1:
+        for i in range(N):
+            z = sort_vector[i] == mid
+            bit_vector.append(z)
+        
+        print("Print Bits Vector:")
+        b_vec_print = []
+        for i in range(N):
+            b_vec_print.append(bit_vector[i].copy().get().child.child.item())
+        print(b_vec_print)
+
+        median = torch.tensor([0]).fix_precision().share(alice, bob, crypto_provider=crypto_provider)
+        for i in range(N):
+            median += shares[i] * bit_vector[i]
+        
+        return median
+    else:
+        for i in range(N):
+            mid_p = torch.Tensor([N // 2 - 1]).fix_precision().share(alice, bob, crypto_provider=crypto_provider)
+            z = (sort_vector[i] == mid) + (sort_vector[i] == mid_p)
+            bit_vector.append(z)
+        
+        print("Print Bits Vector:")
+        b_vec_print = []
+        for i in range(N):
+            b_vec_print.append(bit_vector[i].copy().get().child.child.item())
+        print(b_vec_print)
+
+        median = torch.tensor([0]).fix_precision().share(alice, bob, crypto_provider=crypto_provider)
+        for i in range(N):
+            median += shares[i] * bit_vector[i]
+        
+        median = median / 2
+        return median
+        
 def secure_mode():
     """
     """

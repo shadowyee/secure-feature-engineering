@@ -8,10 +8,12 @@ import numpy as np
 import participants as pt
 import syft as sy
 import torch
+import time
 
 data_owners = None
 crypto_provider = None
 data = None
+num_share = None
 
 def file_to_tensor(file_path):
     """
@@ -38,17 +40,17 @@ def divide_into_shares():
     global data
     data = file_to_tensor(file_path)
 
-    parties_num = 8
+    parties_num = 2
     owner_names = []
     for i in range(0, parties_num):
         owner_names.append("workers" + str(i))
 
     parties = pt.Parties()
-    parties.init_parties(owner_names, "crypro_provider")
+    parties.init_parties(owner_names, "crypto_provider")
 
-    global data_owners, crypro_provider
+    global data_owners, crypto_provider
     data_owners = parties.get_parties()
-    crypro_provider = parties.get_cryptopvd()
+    crypto_provider = parties.get_cryptopvd()
 
     dim = len(data.shape)
     shares = []
@@ -56,6 +58,8 @@ def divide_into_shares():
         shares = {sfe.secret_share(data, data_owners, crypto_provider, False)}
 
     elif dim == 2:
+        global num_share
+        num_share = sfe.secret_share(torch.tensor(data.shape[0]), data_owners, crypto_provider, False)
         data = np.transpose(data)
         for d in data:
             shares.append(sfe.secret_share(d, data_owners, crypto_provider, False))
@@ -87,12 +91,17 @@ def secure_mean_compute(shares):
     elif dim == 2:
         data = np.transpose(data)
         mean = []
+        global num_share
         for share in shares:
-            mean.append(sfunc.secure_compute(share.sum(), share.shape[0], "div", prec))
+            s = share.sum()
+            p = s * pow(10, prec)
+            r = p / num_share
+            mean.append(r)
+            # mean.append(sfunc.secure_compute(share.sum(), share.shape[0], "div", prec))
 
         for m in mean:
-            # print("The mean of data:", float(m.get())/pow(10, fix_prec + prec))
-            ret.append(float(m.get())/pow(10, fix_prec + prec))
+            # ret.append(float(m.get())/pow(10, fix_prec + prec))
+            ret.append(m.get() / pow(10, prec))
 
     print(ret)
 
@@ -115,22 +124,8 @@ def get_middle_result():
         print(f"Local Worker {idx}: {objects} objects, {objects_total_size} bytes")
 
 if __name__ == "__main__":
-    shares = None
-    attr_num = len(sys.argv)
-    if attr_num == 1:
-        raise AttributeError("No argument.")
-    elif attr_num > 2:
-        raise AttributeError("Too much arguments.")
-    else:
-        if sys.argv[1] == "-d":
-            shares = divide_into_shares()
-        elif sys.argv[1] == "-m":
-            get_middle_result()
-        elif sys.argv[1] == "-c":
-            if shares == None:
-                raise Exception("No shares in local workers.")
-            else:
-                secure_mean_compute(shares)
-        else:
-            raise AttributeError("Arg Error!")
- 
+    start_time = time.time()
+    shares = divide_into_shares()
+    secure_mean_compute(shares)
+    runtime = time.time() - start_time
+    print("time: ${}s".format(runtime))

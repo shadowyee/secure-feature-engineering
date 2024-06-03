@@ -38,8 +38,8 @@ if torch.is_tensor(self.other) and not isinstance(self.other.child, int):
 ```
 
 # 3. Backend Deployment
-* update the Flask (from 1.1.4 to 2.2.5)
-warning: syft is not supported by flask 2.2.5
+* update the Flask (from 1.1.1 to 2.2.5)
+warning: syft 0.2.9 is not supported by flask 2.2.5
 ```bash
 pip uninstall flask
 pip install flask

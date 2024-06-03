@@ -30,8 +30,9 @@ crypto_provider = parties.crypto_provider
 
 # Secure feature select from the whole dataset
 def all_fs():
-    private_train_dataset = sfe.secret_share(train_loader.dataset.data, workers, crypto_provider)
-    private_train_target = sfe.secret_share(sfe.one_hot_of(train_loader.dataset.targets), workers, crypto_provider)
+    data = tensor.Tensor([[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6]])
+    private_train_dataset = sfe.secret_share(train_loader.dataset.data[:10], workers, crypto_provider)
+    private_train_target = sfe.secret_share(sfe.one_hot_of(train_loader.dataset.targets[:10]), workers, crypto_provider)
     alice, bob = parties.data_owners
 
     feature_num = 784
@@ -82,7 +83,8 @@ def all_fs():
         print("MS-GINI turn {}: {:.2f}s".format(idx_f, time.time() - start_time))
     
     G = G_F.get().child.child.child
-    torch.save(G, 'data/G_matrix_all.pt')
+    print(G)
+    # torch.save(G, 'data/G_matrix_all.pt')
 
 # Secure feature select from a batch
 def batch_fs():

@@ -14,23 +14,24 @@ from flask import Flask, jsonify, request, Response
 app = Flask(__name__)
 
 data_owners = None
+owner_names = None
 crypto_provider = None
 data = None
 shares = None
 
 def init():
-    global data_owners, crypro_provider,data
+    global data_owners, owner_names, crypto_provider,data
     
-    parties_num = 8
+    parties_num = 2
     owner_names = []
     for i in range(0, parties_num):
         owner_names.append("workers" + str(i))
 
     parties = pt.Parties()
-    parties.init_parties(owner_names, "crypro_provider")
+    parties.init_parties(owner_names, "crypto_provider")
 
     data_owners = parties.get_parties()
-    crypro_provider = parties.get_cryptopvd()
+    crypto_provider = parties.get_cryptopvd()
 
 init()
 
@@ -53,7 +54,7 @@ def divide_into_shares():
     """
 
     """
-    global data, data_owners, crypro_provider
+    global data, data_owners, crypto_provider
     
     data = file_to_tensor()
     dim = len(data.shape)
@@ -61,6 +62,7 @@ def divide_into_shares():
     global shares
     shares = []
     if dim == 1:
+        # TODO: 未将元素数量进行秘密分享
         shares.append(sfe.secret_share(data, data_owners, crypto_provider, False))
 
     elif dim == 2:
@@ -86,8 +88,6 @@ def upload_file():
             return Response("No file part", status=400)
 
         file = request.files['file']
-        
-        print("test")
 
         if file and allowed_file(file.filename):
             filename = os.path.join(app.config['UPLOAD_FOLDER'], "test.txt")
@@ -112,7 +112,6 @@ def get_shares():
             objects.append(tuple(obj.tolist()))
             total_size += obj.__sizeof__()
         return objects, total_size
-
     ret = []
     global data_owners
     for idx, i in enumerate(data_owners):
@@ -120,8 +119,9 @@ def get_shares():
         ret.append([idx, tuple(objects), objects_total_size])
         # print(f"Local Worker {idx}: {objects} objects, {objects_total_size} bytes")
     
-    # TODO: 让ret更加标准一点
     return jsonify({"shares:": ret })
+
+
 
 @app.route('/api/mean', methods=['GET'])
 def secure_mean_compute():
@@ -141,6 +141,7 @@ def secure_mean_compute():
 
     global shares
     if dim == 1:
+        # TODO: 未对元素数量的秘密份额进行除法
         num = data.shape[0]
         for share in shares:
             sum = share.sum()
@@ -150,15 +151,28 @@ def secure_mean_compute():
     elif dim == 2:
         data = np.transpose(data)
         mean = []
+       
         for share in shares:
             mean.append(sfunc.secure_compute(share.sum(), share.shape[0], "div", prec))
 
+        def get_mean_share(worker):
+            objects = []
+            for obj_id in worker._objects:
+                obj = worker._objects[obj_id]
+                if obj.shape == torch.Size([]):
+                    objects.append(int(obj))
+            return objects
+
+        mean_shares = []
+        global data_owners
+        for idx, i in enumerate(data_owners):
+            objects = get_mean_share(i)
+            mean_shares.append([idx, tuple(objects)])
+
         for m in mean:
-            # print("The mean of data:", float(m.get())/pow(10, fix_prec + prec))
             ret.append(float(m.get())/pow(10, fix_prec + prec))
 
-    # TODO: 让ret更加标准一点
-    return jsonify({"mean:": ret })
+    return jsonify({"mean:": ret, "shares:": mean_shares})
     
     
 if __name__ == "__main__":
