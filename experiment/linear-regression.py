@@ -17,16 +17,6 @@ def step_gradient(w_current:torch.Tensor, b_current:torch.Tensor, X:torch.Tensor
     :param lr:学习率
     :return:更新后的参数w,b
     """
-    
-    # for i in range(N):
-    #     x = X[i]
-    #     y = Y[i]
-    #     # 误差函数对w的导数，参考公式(3.5)
-    #     mid = (2 / N) * ((w_current * x + b_current) - y) 
-    #     b_gradient += mid
-    #     # 误差函数对b的导数，参考公式(3.4)
-    #     w_gradient += mid * x
-    #     # w_gradient += b_gradient * x
 
     # print(w_current.copy().get())
     # print(b_current.copy().get())
