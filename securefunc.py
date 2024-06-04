@@ -133,32 +133,6 @@ def secure_reciprocal(x):
     """
     pass
 
-def __division_newton(a, b, precision=1e-3, max_iter=1000):
-    """
-    使用牛顿迭代法实现除法
-    """
-    # if b == 0:
-    #     raise ValueError("除数不能为零")
-
-    # 定义牛顿迭代函数
-    def f(x):
-        return a - (1 / b) * x
-
-    # 定义牛顿迭代的导数函数
-    def df(x):
-        return -1 / b
-
-    # 初始化迭代起点
-    x = 1.0
-
-    # 进行牛顿迭代
-    for _ in range(max_iter):
-        x_next = x - f(x) / df(x)
-
-        x = x_next
-
-    return x_next
-
 def secure_max(shares):
     """
     Compute the maximium of a group of numbers
